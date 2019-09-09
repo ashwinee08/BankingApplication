@@ -59,10 +59,15 @@ public class MainActivity extends AppCompatActivity {
             progressBar.dismiss();
         }
         this.transactionInfoList=transactionInfoList;
-        viewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager(),transactionInfoList));
-        tabLayout.setupWithViewPager(viewPager);
-        tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.colorPrimaryDarkB));
-        Log.d("EXITING RESULT","");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                viewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager(),transactionInfoList));
+                tabLayout.setupWithViewPager(viewPager);
+                tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.colorPrimaryDarkB));
+                Log.d("EXITING RESULT","");
+            }
+        });
     }
 
 
