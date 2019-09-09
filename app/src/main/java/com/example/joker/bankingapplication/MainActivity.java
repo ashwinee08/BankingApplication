@@ -97,20 +97,40 @@ public class MainActivity extends AppCompatActivity {
 
         private TransactionInfo getDataFromMessage(String[] words){
             TransactionInfo transactionInfo=new TransactionInfo();
-            for(String word:words){
-                if(word.matches("\\d{2}-\\d{2}-\\d{2}")){
-                    transactionInfo.setDate(word);
-                }else if(word.matches("\\d{0,9}(\\.\\d{1,2})")){
-                    transactionInfo.setAmountDeducted(word);
-                }else {
-                    if (word.equals("debited")) {
-                        transactionInfo.setType(TransactionInfo.BankingType.debited);
-                    }else if(word.equals("credited")){
-                        transactionInfo.setType(TransactionInfo.BankingType.credited);
+             String date=null,amountTransacted=null;
+            TransactionInfo.BankingType type=null;
+            if(words[0].equals("Your")){
+                date=words[10];
+                amountTransacted=words[8];
+                if (words[5].equals("debited")) {
+                        type=TransactionInfo.BankingType.debited;
+                    }else if(words[5].equals("credited")){
+                    type=TransactionInfo.BankingType.credited;
                     }
+            }else if(words[0].equals("Ac")){
+                date=words[9];
+                amountTransacted=getTransactedAmount(words[4]);
+                if (words[2].equals("debited")) {
+                    type=TransactionInfo.BankingType.debited;
+                }else if(words[2].equals("credited")){
+                    type=TransactionInfo.BankingType.credited;
                 }
             }
-            return transactionInfo;
+            if(date!=null)
+            transactionInfo.setDate(date);
+
+            if(amountTransacted!=null)
+            transactionInfo.setAmountDeductedOrCredited(amountTransacted);
+
+            if(type!=null)
+            transactionInfo.setType(type);
+
+            return ((date!=null)&&(amountTransacted!=null)&&(type!=null))?transactionInfo:null;
+        }
+
+        private String getTransactedAmount(String fullAmountwithRs){
+            String[] rupees=fullAmountwithRs.split("\\.");
+            return rupees[1]+"."+rupees[2];
         }
 
         @Override
