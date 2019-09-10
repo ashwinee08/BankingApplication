@@ -1,7 +1,6 @@
 package com.example.joker.bankingapplication;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -11,7 +10,6 @@ import android.util.Log;
 import com.google.gson.Gson;
 
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,14 +46,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getHold(){
-            tabLayout=findViewById(R.id.tabs);
-            viewPager=findViewById(R.id.view_pager);
+        tabLayout=findViewById(R.id.tabs);
+        viewPager=findViewById(R.id.view_pager);
     }
 
-    private void result(List<TransactionInfo> transactionInfoList){
+
+    private void result(final List<TransactionInfo> transactionInfoList){
         Log.d("INSIDE RESULT","");
         if(progressBar.isShowing()){
-            progressBar.cancel();
             progressBar.dismiss();
         }
         this.transactionInfoList=transactionInfoList;
@@ -82,11 +80,21 @@ public class MainActivity extends AppCompatActivity {
         private List<TransactionInfo> convertJsonIntoList(){
             List<TransactionInfo> finalListOfMessages=new ArrayList<>();
             Gson gson=new Gson();
-            Reader reader=new InputStreamReader(MainActivity.this.getResources().openRawResource(R.raw.sms));
+            InputStreamReader reader=null;
+            try{
+                reader=new InputStreamReader(MainActivity.this.getResources().openRawResource(R.raw.sms));
+            }catch(Exception e){
+                Log.d("INSIDE EXCEPTION","");
+            }
+            if(reader==null){
+                return null;
+            }
             SMSModel smsModel=gson.fromJson(reader, SMSModel.class);
             for(IndividualMessage messages:smsModel.getSmsList()){
-                if(messages.getAddress().contains("PNBSMS")){
-
+                if(messages.getAddress().contains("PNBSMS")
+                        && messages.getBody().contains("XXXXXXXX00004252")
+                        || messages.getBody().contains("XXXXXXXX4252")
+                ){
                     String[] words=messages.getBody().split(" ");
                     finalListOfMessages.add(getDataFromMessage(words));
                 }
@@ -96,42 +104,56 @@ public class MainActivity extends AppCompatActivity {
 
 
         private TransactionInfo getDataFromMessage(String[] words){
+            boolean amountIsSet=false;
             TransactionInfo transactionInfo=new TransactionInfo();
-             String date=null,amountTransacted=null;
-            TransactionInfo.BankingType type=null;
-            if(words[0].equals("Your")){
-                date=words[10];
-                amountTransacted=words[8];
-                if (words[5].equals("debited")) {
-                        type=TransactionInfo.BankingType.debited;
-                    }else if(words[5].equals("credited")){
-                    type=TransactionInfo.BankingType.credited;
+
+            for(String word:words){
+                if(word.matches("\\d{2}-\\d{2}-\\d{2}")){
+                    transactionInfo.setDate(word);
+                }else if(word.matches("\\d{2}-\\d{2}-\\d{4}")){
+                    transactionInfo.setDate(this.changeDateFormat(word));
+                }else if(word.toLowerCase().equals("debited")) {
+                    transactionInfo.setType(TransactionInfo.BankingType.debited);
+                }else if(word.toLowerCase().equals("credited")){
+                    transactionInfo.setType(TransactionInfo.BankingType.credited);
+                }else if(!amountIsSet){
+                    if(word.matches("\\d{0,9}(\\.\\d{1,2})")){
+                        transactionInfo.setAmountDeductedOrCredited(word);
+                        amountIsSet=true;
+                    }else if(word.contains("Rs")) {
+                        if (word.length() > 3) {
+                            String moneyWithRs=word.substring(3);
+                            if(moneyWithRs.contains(",")) {
+                                String[] semiWords = moneyWithRs.split(",");
+                                transactionInfo.setAmountDeductedOrCredited(semiWords[0]);
+                                amountIsSet = true;
+                                if (transactionInfo.getDate() == null) {
+                                    transactionInfo.setDate(this.changeDateFormat(semiWords[1]));
+                                }
+                            }else {
+                                transactionInfo.setAmountDeductedOrCredited(moneyWithRs);
+                                amountIsSet = true;
+                            }
+                        }
                     }
-            }else if(words[0].equals("Ac")){
-                date=words[9];
-                amountTransacted=getTransactedAmount(words[4]);
-                if (words[2].equals("debited")) {
-                    type=TransactionInfo.BankingType.debited;
-                }else if(words[2].equals("credited")){
-                    type=TransactionInfo.BankingType.credited;
                 }
             }
-            if(date!=null)
-            transactionInfo.setDate(date);
 
-            if(amountTransacted!=null)
-            transactionInfo.setAmountDeductedOrCredited(amountTransacted);
 
-            if(type!=null)
-            transactionInfo.setType(type);
-
-            return ((date!=null)&&(amountTransacted!=null)&&(type!=null))?transactionInfo:null;
+            return transactionInfo;
         }
 
-        private String getTransactedAmount(String fullAmountwithRs){
-            String[] rupees=fullAmountwithRs.split("\\.");
+        private String changeDateFormat(String date){
+           String[] dateMonthYear= date.split("-");
+           return dateMonthYear[0]+"-"+dateMonthYear[1]+"-"+dateMonthYear[2].charAt(2)+dateMonthYear[2].charAt(3);
+        }
+
+
+        private String getTransactedAmount(String fullAmountWithRs){
+            String[] rupees=fullAmountWithRs.split("\\.");
             return rupees[1]+"."+rupees[2];
         }
+
 
         @Override
         public void run() {
