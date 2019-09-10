@@ -39,10 +39,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         Log.d("INSIDE START","");
         super.onStart();
-        progressBar=new ProgressDialog(this);
-        progressBar.setCancelable(false);
-        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressBar.show();
+        
+        if(viewPager.findViewById(R.id.debits_recycler_view_debits)== null){
+            progressBar=new ProgressDialog(this);
+            progressBar.setCancelable(false);
+            progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressBar.setMessage("Loading data...");
+            progressBar.show();
+        }
     }
 
     private void getHold(){
