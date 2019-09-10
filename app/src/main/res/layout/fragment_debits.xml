@@ -1,13 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="fragments.DebitsFragment">
+
+    <!-- TODO: Update blank fragment layout -->
     <TextView
+        android:id="@+id/default_msg_debits"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textSize="21sp"
-        android:text="@string/debits_fragment"
-        android:textColor="@color/colorBlack"
+        android:text="@string/DEFAULT_MESSAGE_FOR_NO_SHOW"
         android:textAlignment="center"
-        android:paddingTop="50dp"/>
+        android:textSize="21sp"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/debits_recycler_view_debits"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:scrollbars="vertical"/>
 </FrameLayout>
