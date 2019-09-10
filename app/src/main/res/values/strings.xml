@@ -1,6 +1,13 @@
 <resources>
-    <string name="app_name">BankingApplication</string>
-    <string name="bank_statement_fragment">Bank Statement Fragment</string>
-    <string name="credits_fragment">Credits Fragment</string>
-    <string name="debits_fragment">Debits Fragment</string>
+    <string name="app_name">BankApplication</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="Debits_details">Debits details</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="Credits_fragment">Credits details</string>
+
+    <string name="Bank_statement_fragment">Bank Statement</string>
+    <string name="DEFAULT_MESSAGE_FOR_NO_SHOW">No Transactions to Show</string>
 </resources>
+
