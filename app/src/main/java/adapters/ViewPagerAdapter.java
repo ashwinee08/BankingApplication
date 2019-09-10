@@ -16,14 +16,15 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     private static List<TransactionInfo> transactionInfoList;
 
-    public ViewPagerAdapter(FragmentManager fm,final List<TransactionInfo> transactionInfoList) {
+    public ViewPagerAdapter(FragmentManager fm,final List<TransactionInfo> transactionInfoListLocal) {
         super(fm);
-        this.transactionInfoList=transactionInfoList;
+        transactionInfoList=transactionInfoListLocal;
     }
 
     public static List<TransactionInfo> getTransactionInfoList(){
         return transactionInfoList;
     }
+
 
     @Override
     public Fragment getItem(int i) {
