@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 public class TransactionInfo {
     String date;
-    String amountDeducted;
+    String AmountDeductedOrCredited;
     BankingType type;
 
 
@@ -40,12 +40,12 @@ public class TransactionInfo {
         this.date = date;
     }
 
-    public String getAmountDeducted() {
-        return amountDeducted;
+    public String getAmountDeductedOrCredited() {
+        return AmountDeductedOrCredited;
     }
 
-    public void setAmountDeducted(String amountDeducted) {
-        this.amountDeducted = amountDeducted;
+    public void setAmountDeductedOrCredited(String amountDeducted) {
+        this.AmountDeductedOrCredited = amountDeducted;
     }
 
     public BankingType getType() {
@@ -62,10 +62,10 @@ public class TransactionInfo {
 
 
     public String allTogether(){
-        return date + "     " + amountDeducted+"    " + type;
+        return date + "     " + AmountDeductedOrCredited+"    " + type;
     }
 
     public String allTogetherExceptType(){
-        return date + "        " + amountDeducted;
+        return date + "        " + AmountDeductedOrCredited;
     }
 }
